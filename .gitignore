@@ -34,3 +34,42 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+
+# VS Code
+.vscode/
+
+# JetBrains IDEs (WebStorm, IntelliJ, etc.)
+.idea/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+
+
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+
+
+# Logs
+logs
+*.log
+*.log.[0-9]*
+*.log.[0-9][0-9]
+*.log.[0-9][0-9][0-9]
+
+
+# Bower
+bower_components/
+
+
+# Build artifacts
+dist/
+

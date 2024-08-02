@@ -2,11 +2,8 @@
 import {useState} from "react";
 import { SlMagnifier } from "react-icons/sl";
 import MovieList from "./movie_list";
-import MovieArray from "./movie_array";
-
-import Link from 'next/link';
 import {useUserAuth} from "./_utils/auth-context.js";
-
+import { useEffect } from "react";
 
 export default function Page() {
 
@@ -34,16 +31,29 @@ export default function Page() {
   };
 //***********************************************************************************/
 
+/***********************************API*********************************************** */
+    
+useEffect(() => {
+  if (name) {
+      UpdateMovieArray();
+  }
+}, [name,setMovieArray]);
 
 
+async function UpdateMovieArray() {
+const NewMovieArray = await fetchMovieArray(name);
+setMovieArray(NewMovieArray)
+}
 
+/**************************************************************************************** */
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(name + 'this is in page.js');
+    console.log('in page.js Name is:'+ name);
     if (searchbar.trim() === '') {
       setMovieArray([]);
     } else {
       setName(searchbar);
+      console.log('in page.js searchbar is:'+searchbar)
     }
 
   }
@@ -57,7 +67,7 @@ export default function Page() {
 return (
   <main className="flex flex-col h-dvh ">
             {/* h-dvh sets the height of the entire div to the display viewport height (what you can see?) */}
-            <nav className="flex bg-zinc-900  h-16 items-center  ">
+            <div className="flex bg-zinc-900  h-16 items-center  ">
               <div className="bg-black ml-32 rounded-md ">
               <p className="pl-4 pr-4 pt-1 pb-1 text-2xl    text-cyan-500">SMF</p>
               </div>
@@ -68,8 +78,8 @@ return (
                       <button className="mr-10"  type="submit"><SlMagnifier className="w-8 h-8 " /></button>
                     </form>        
               <div className="flex">
-                    {user ? (<main className="">
-                            <p>Welcome{user.displayName} ({user.email})</p>
+                    {user ? (<main className="flex">
+                            <p>({user.email})</p>
                             <button className="" onClick={handleLogout}>sign out</button>
                             </main>):(
                             <main className="">
@@ -77,14 +87,13 @@ return (
                             </main>
                     )}
               </div>
-            </nav>
+            </div>
 
             {/* Comment text here */}
             <div className="flex  justify-around bg-cover bg-center "> 
                   <div className="flex flex-wrap border-white border-2 m-5 rounded-xl w-3/4 ">
                   {ArrayOfMovies.length > 0  ? (
                     <>
-                    <MovieArray name={name} setMovieArray={setMovieArray}/>
                     <MovieList ArrayOfMovies={ArrayOfMovies} />
                     </>
                   ):(
@@ -102,7 +111,24 @@ return (
   );
 }
 
+async function fetchMovieArray(moviename) {
+  try {
+      const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${moviename}&api_key=de85768f0d74622c7361ecc14c017ec1`);
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (data.results) {
+          return data.results;
+      } else {
+          return;
+      }
+  } catch (error) {
+      console.log(error.message);
+      return [];
 
+  }
+}
     
 
 

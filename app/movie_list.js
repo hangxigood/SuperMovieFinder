@@ -3,6 +3,8 @@ import {useState} from "react";
 import Movie from "./movie_item";
 
 export default function MovieList({ArrayOfMovies}){
+
+    
     console.log(ArrayOfMovies);
 return (
     <>
@@ -18,3 +20,5 @@ return (
     </>
 );
 }
+
+//lists

@@ -11,8 +11,10 @@ export default function Page() {
   var [name, setName] = useState("");
   var [searchbar, setSearchBar] = useState("");
 
-//**************************************firebase**************************************// 
+//**************************************Firebase**************************************// 
   const { user, gitHubSignIn, firebaseSignOut } = useUserAuth();
+
+  console.log('the User in page.js is:', user?.uid);
 
   const handleLogin = async () => {
     try {
@@ -31,13 +33,13 @@ export default function Page() {
   };
 //***********************************************************************************/
 
-/***********************************API*********************************************** */
+/***********************************API************************************************/
     
 useEffect(() => {
   if (name) {
       UpdateMovieArray();
   }
-}, [name,setMovieArray]);
+}, [name]);
 
 
 async function UpdateMovieArray() {
@@ -51,6 +53,7 @@ setMovieArray(NewMovieArray)
     console.log('in page.js Name is:'+ name);
     if (searchbar.trim() === '') {
       setMovieArray([]);
+      setName("");
     } else {
       setName(searchbar);
       console.log('in page.js searchbar is:'+searchbar)
@@ -79,11 +82,11 @@ return (
                     </form>        
               <div className="flex">
                     {user ? (<main className="flex">
-                            <p>({user.email})</p>
-                            <button className="" onClick={handleLogout}>sign out</button>
+                            <p className="mr-10">{user.email}</p>
+                            <button className="mr-6" onClick={handleLogout}>Sign out</button>
                             </main>):(
                             <main className="">
-                                <button className="rounded to-blue-600" onClick={handleLogin}>sign in</button>
+                                <button className="mr-14" onClick={handleLogin}>Sign in</button>
                             </main>
                     )}
               </div>

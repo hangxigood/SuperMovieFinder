@@ -9,7 +9,7 @@ export default function Movie({ id, poster_path, title, release_date, vote_avera
 
 
 /****************************Add Movie to DB favourites***************************************** */
-    const handleSubmit = () => 
+    const handleClick = () => 
         {
             const newFavourite = 
             {
@@ -30,7 +30,7 @@ export default function Movie({ id, poster_path, title, release_date, vote_avera
                     <p className="font-bold">{title}</p>
                     <p className="mt-3 mb-3">{release_date}</p>
                     <p>Rating:{vote_average}</p>
-                   <button className="mt-1 ml-1 w-0" onClick={handleSubmit}><HeartIcon color={'white'}/></button>
+                   <button className="mt-1 ml-1 w-0" onClick={handleClick}><HeartIcon color={'white'}/></button>
             </div>
         </div>
         <p>{overview.substring(0, 150)}{overview.length > 100 ? '...' : ''}</p>

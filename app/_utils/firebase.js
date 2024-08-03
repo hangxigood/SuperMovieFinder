@@ -23,5 +23,4 @@ export const auth = getAuth(app);
 
 //fire store
 import { getFirestore } from "firebase/firestore";
-
 export const db = getFirestore(app);

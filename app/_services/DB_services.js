@@ -1,6 +1,6 @@
 //imports to connect to the firebase service thought the firebase.js file 
 import { db } from "../_utils/firebase";
-import { collection, getDocs, addDoc, query, where, doc } from "firebase/firestore";
+import { collection, getDocs, addDoc, query, deleteDoc, where, doc } from "firebase/firestore";
 
 
 
@@ -16,9 +16,18 @@ import { collection, getDocs, addDoc, query, where, doc } from "firebase/firesto
       console.log(querySnapshot);
       var itemsArray = [];
   
+   //  querySnapshot.forEach((doc) => {
+     //  itemsArray.push({id2: doc.id, ...doc.data()});
+      // console.log('Document Data:', doc.data());
+       //console.log(doc.id);
+
+
       querySnapshot.forEach((doc) => {
-        console.log('Document Data:', doc.data());
-        itemsArray.push({ id: doc.id, ...doc.data() });
+      const data = doc.data();
+       console.log('Document Data before merging:', data);
+       const item = { docid: doc.id, ...data };
+       console.log('Item after merging:', item);
+       itemsArray.push(item);
       });
   
       return itemsArray;
@@ -40,13 +49,26 @@ import { collection, getDocs, addDoc, query, where, doc } from "firebase/firesto
 //"items " is a collection of item documents, the documents this collection holds will be objects
 async function addItem(userId, Item) {
   //add doc returns a promise
-    const docRef = await addDoc(collection(db, "users", userId, "movies"), 
-    //Item is the object we are passing looks like  this  { } 
-    Item
-  );
+  //Item is the object we are passing looks like  this  { } 
+    const docRef = await addDoc(collection(db, "users", userId, "movies"), Item);
     console.log("Item is created with ID: ", docRef.id);
 
 }
+
+async function deleteItem (userId, itemId){
+
+    try {
+      const itemRef = doc(db, "users", userId, "movies", itemId)
+      await deleteDoc(itemRef);
+      console.log("Item Deleted");
+    }
+    catch(error){
+    
+    console.error(error)
+      }
+    
+    }
+
 
 
 // Function to create an item-- I dontunderstand the purpose of this method compared to add item???
@@ -58,4 +80,4 @@ async function createItem(db, userId, itemData) {
 
 
 
-export { getItems, addItem, createItem };
+export { getItems, addItem, createItem, deleteItem };

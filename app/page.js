@@ -8,12 +8,12 @@ import { addItem } from "./_services/DB_services";
 import MovieFavourtieList from "./movie_favourite_list";
 import { getItems } from "./_services/DB_services";
 import { db } from "./_utils/firebase";
-
+import { deleteItem } from "./_services/DB_services";
 
 
 export default function Page() {
 
-  /****************************State Variables******************************************** */
+  /****************************State Variables*********************************************/
 
   const [ArrayOfMovies,setMovieArray] = useState([]);
   const [name, setName] = useState("");
@@ -22,11 +22,37 @@ export default function Page() {
 
 
   const { user, gitHubSignIn, firebaseSignOut } = useUserAuth();
-  /*****************************************Firestore DB********************************************************** */
+  /*****************************************Firestore DB***********************************************************/
 //on press of like button add movie object to DB
-var handleAddItem = (addedItem) => {
-  addItem(user.uid,addedItem)
-  setfavouritesarray(favouritesarray => { return[...favouritesarray,addedItem]})
+var handleAddItem = async (addedItem) => {
+  if(user){
+  await addItem(user.uid,addedItem)
+  setfavouritesarray(favouritesarray => {return[addedItem,...favouritesarray]})
+}
+
+};
+
+
+var handleDeleteItem = async (docRef) => {
+  await deleteItem(user.uid,docRef);
+  const loadItems = async () => {
+    if (user) {
+      console.log("User is defined:", user); // Log user object
+      console.log("User ID:", user.uid); // Debug log
+      try {
+        const itemsArray = await getItems(db, user.uid);
+        console.log("The items array is:", itemsArray); // Print the items to the console
+        setfavouritesarray(itemsArray);
+      } catch (error) {
+        console.error("Error fetching items:", error); // Log errors
+      }
+    } else {
+      console.log("User is not defined"); // Log when user is not defined
+    }
+  }
+  loadItems();
+
+
 }
 
 //on page load get favourties from DB 
@@ -147,9 +173,15 @@ return (
                   )
                 }
                   </div>
-                  <div className=" border-white border-2  m-5 rounded-xl w-1/4 ">
-                  <MovieFavourtieList favouritesarray={favouritesarray}/>
+
+
+                  
+                  <div className="flex flex-col items-center border-white border-2  m-5 rounded-xl w-1/4 ">
+                  <p>Favourties</p>
+                  <MovieFavourtieList favouritesarray={favouritesarray} onDeleteItem={handleDeleteItem}/>
+                  
                   </div>
+                  
             </div>
   </main>
   );

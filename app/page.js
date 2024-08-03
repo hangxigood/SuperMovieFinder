@@ -4,15 +4,55 @@ import { SlMagnifier } from "react-icons/sl";
 import MovieList from "./movie_list";
 import {useUserAuth} from "./_utils/auth-context.js";
 import { useEffect } from "react";
+import { addItem } from "./_services/DB_services";
+import MovieFavourtieList from "./movie_favourite_list";
+import { getItems } from "./_services/DB_services";
+import { db } from "./_utils/firebase";
+
+
 
 export default function Page() {
 
+  /****************************State Variables******************************************** */
+
   const [ArrayOfMovies,setMovieArray] = useState([]);
-  var [name, setName] = useState("");
-  var [searchbar, setSearchBar] = useState("");
+  const [name, setName] = useState("");
+  const [searchbar, setSearchBar] = useState("");
+  const [favouritesarray,setfavouritesarray] = useState([]);
+
+
+  const { user, gitHubSignIn, firebaseSignOut } = useUserAuth();
+  /*****************************************Firestore DB********************************************************** */
+//on press of like button add movie object to DB
+var handleAddItem = (addedItem) => {
+  addItem(user.uid,addedItem)
+  setfavouritesarray(favouritesarray => { return[...favouritesarray,addedItem]})
+}
+
+//on page load get favourties from DB 
+useEffect(() => {
+  const loadItems = async () => {
+    if (user) {
+      console.log("User is defined:", user); // Log user object
+      console.log("User ID:", user.uid); // Debug log
+      try {
+        const itemsArray = await getItems(db, user.uid);
+        console.log("The items array is:", itemsArray); // Print the items to the console
+        setfavouritesarray(itemsArray);
+      } catch (error) {
+        console.error("Error fetching items:", error); // Log errors
+      }
+    } else {
+      console.log("User is not defined"); // Log when user is not defined
+    }
+  };
+  loadItems();
+}, [user]);
+
+
 
 //**************************************Firebase**************************************// 
-  const { user, gitHubSignIn, firebaseSignOut } = useUserAuth();
+
 
   console.log('the User in page.js is:', user?.uid);
 
@@ -31,9 +71,9 @@ export default function Page() {
       console.error("Failed to sign out:", error);
     }
   };
-//***********************************************************************************/
 
-/***********************************API************************************************/
+
+/***********************************API Search************************************************/
     
 useEffect(() => {
   if (name) {
@@ -47,7 +87,7 @@ const NewMovieArray = await fetchMovieArray(name);
 setMovieArray(NewMovieArray)
 }
 
-/**************************************************************************************** */
+/******************************************FORM SUBMISSION********************************************** */
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log('in page.js Name is:'+ name);
@@ -65,7 +105,7 @@ setMovieArray(NewMovieArray)
   const handleNameChange = (event) =>
     {setSearchBar(event.target.value);}
 
-
+/**************************************************************************************************************** */
 
 return (
   <main className="flex flex-col h-dvh ">
@@ -97,7 +137,7 @@ return (
                   <div className="flex flex-wrap border-white border-2 m-5 rounded-xl w-3/4 ">
                   {ArrayOfMovies.length > 0  ? (
                     <>
-                    <MovieList ArrayOfMovies={ArrayOfMovies} />
+                    <MovieList ArrayOfMovies={ArrayOfMovies} onAddItem={handleAddItem} />
                     </>
                   ):(
                     <>
@@ -107,12 +147,17 @@ return (
                   )
                 }
                   </div>
-                  <div className=" border-white border-2  m-5 rounded-xl w-1/4 ">Favourites
+                  <div className=" border-white border-2  m-5 rounded-xl w-1/4 ">
+                  <MovieFavourtieList favouritesarray={favouritesarray}/>
                   </div>
             </div>
   </main>
   );
 }
+
+
+
+/***********************************************************API FETCH********************************************************************* */
 
 async function fetchMovieArray(moviename) {
   try {
@@ -134,5 +179,3 @@ async function fetchMovieArray(moviename) {
 }
     
 
-
-//<Movie poster_path={tempobj.poster_path} title={tempobj.title} release_date={tempobj.release_date} vote_average={tempobj.vote_average} overview={tempobj.overview}/> 

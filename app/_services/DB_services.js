@@ -13,20 +13,13 @@ import { collection, getDocs, addDoc, query, deleteDoc, where, doc } from "fireb
   
     try {
       const querySnapshot = await getDocs(q);
-      console.log(querySnapshot);
+      console.log('the query snapshot:' + querySnapshot);
       var itemsArray = [];
-  
-   //  querySnapshot.forEach((doc) => {
-     //  itemsArray.push({id2: doc.id, ...doc.data()});
-      // console.log('Document Data:', doc.data());
-       //console.log(doc.id);
-
-
       querySnapshot.forEach((doc) => {
       const data = doc.data();
-       console.log('Document Data before merging:', data);
+      // console.log('Document Data before merging:', data);
        const item = { docid: doc.id, ...data };
-       console.log('Item after merging:', item);
+      // console.log('Item after merging:', item);
        itemsArray.push(item);
       });
   
@@ -50,8 +43,9 @@ import { collection, getDocs, addDoc, query, deleteDoc, where, doc } from "fireb
 async function addItem(userId, Item) {
   //add doc returns a promise
   //Item is the object we are passing looks like  this  { } 
-    const docRef = await addDoc(collection(db, "users", userId, "movies"), Item);
+    const docRef = await addDoc(collection(db, "users", userId, "movies") ,Item);
     console.log("Item is created with ID: ", docRef.id);
+    return docRef.id;
 
 }
 

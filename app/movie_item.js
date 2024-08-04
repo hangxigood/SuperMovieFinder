@@ -17,7 +17,7 @@ export default function Movie({ id, poster_path, title, release_date, vote_avera
                 title,
                 poster_path
             };
-            onAddItem(newFavourite);
+            onAddItem(newFavourite );
             console.log(newFavourite.id,newFavourite.title, newFavourite.poster_path);
         }
 

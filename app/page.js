@@ -24,36 +24,22 @@ export default function Page() {
   const { user, gitHubSignIn, firebaseSignOut } = useUserAuth();
   /*****************************************Firestore DB***********************************************************/
 //on press of like button add movie object to DB
-var handleAddItem = async (addedItem) => {
+const handleAddItem = async (addedItem) => {
   if(user){
-  await addItem(user.uid,addedItem)
+  var docid = await addItem(user.uid,addedItem)
+  console.log('the SUPERDUPER docref is:' + docid )
+    addedItem.docid  = docid;
   setfavouritesarray(favouritesarray => {return[addedItem,...favouritesarray]})
 }
 
 };
 
 
-var handleDeleteItem = async (docRef) => {
+const handleDeleteItem = async (docRef) => {
   await deleteItem(user.uid,docRef);
-  const loadItems = async () => {
-    if (user) {
-      console.log("User is defined:", user); // Log user object
-      console.log("User ID:", user.uid); // Debug log
-      try {
-        const itemsArray = await getItems(db, user.uid);
-        console.log("The items array is:", itemsArray); // Print the items to the console
-        setfavouritesarray(itemsArray);
-      } catch (error) {
-        console.error("Error fetching items:", error); // Log errors
-      }
-    } else {
-      console.log("User is not defined"); // Log when user is not defined
-    }
-  }
-  loadItems();
-
-
 }
+
+
 
 //on page load get favourties from DB 
 useEffect(() => {
@@ -80,7 +66,6 @@ useEffect(() => {
 //**************************************Firebase**************************************// 
 
 
-  console.log('the User in page.js is:', user?.uid);
 
   const handleLogin = async () => {
     try {
@@ -116,13 +101,13 @@ setMovieArray(NewMovieArray)
 /******************************************FORM SUBMISSION********************************************** */
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log('in page.js Name is:'+ name);
+   // console.log('in page.js Name is:'+ name);
     if (searchbar.trim() === '') {
       setMovieArray([]);
       setName("");
     } else {
       setName(searchbar);
-      console.log('in page.js searchbar is:'+searchbar)
+      //console.log('in page.js searchbar is:'+searchbar)
     }
 
   }
@@ -178,7 +163,7 @@ return (
                   
                   <div className="flex flex-col items-center border-white border-2  m-5 rounded-xl w-1/4 ">
                   <p>Favourties</p>
-                  <MovieFavourtieList favouritesarray={favouritesarray} onDeleteItem={handleDeleteItem}/>
+                  <MovieFavourtieList favouritesarray={favouritesarray} onDeleteItem={handleDeleteItem} setfavouritesarray={setfavouritesarray}/>
                   
                   </div>
                   

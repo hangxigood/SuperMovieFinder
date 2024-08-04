@@ -2,14 +2,18 @@
 import {useState} from "react";
 import XIcon from "./x_icon";
 
-export default function MovieFavourite({poster_path, title, onDeleteItem, docid}){
+export default function MovieFavourite({poster_path, title, onDeleteItem, docid, favouritesarray, movie,setfavouritesarray}){
 
-    
+    console.log('the FA in MF is:'+ favouritesarray);
+    console.log('the docid in  MF is:' + docid);
 
     const handleClick  = async () => 
         {
            await onDeleteItem(docid);
+            setfavouritesarray([...favouritesarray.filter(m => m !== movie)])
         }
+
+
     return(
         <div>
             

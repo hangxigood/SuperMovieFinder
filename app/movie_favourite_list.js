@@ -5,7 +5,7 @@ import MovieFavourite from "./movie_favourite";
 export default function MovieFavourtieList({favouritesarray,onDeleteItem, setfavouritesarray}){
 
 
-console.log('the FA in MFL is :' + favouritesarray)
+//console.log('the FA in MFL is :' + favouritesarray)
 
 return (
     <div>

@@ -4,7 +4,7 @@ import Movie from "./movie_item";
 export default function MovieList({ArrayOfMovies,onAddItem}){
 
     
-    console.log(ArrayOfMovies);
+   // console.log(ArrayOfMovies);
 return (
     <>
     <ul className="flex flex-wrap"> 

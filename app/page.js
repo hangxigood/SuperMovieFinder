@@ -119,7 +119,7 @@ setMovieArray(NewMovieArray)
 /**************************************************************************************************************** */
 
 return (
-  <main className="flex flex-col h-dvh ">
+  <main className="flex flex-col h-auto">
             {/* h-dvh sets the height of the entire div to the display viewport height (what you can see?) */}
             <div className="flex bg-zinc-900  h-16 items-center  ">
               <div className="bg-black ml-32 rounded-md ">
@@ -128,7 +128,8 @@ return (
                     {/* our form for the search */}
                     {/*The Value of the input field must be tied to the state variable Name, in order for the test to be seen typing in, and for the the name variable to be used.*/}
                     <form className="flex flex-grow" onSubmit={handleSubmit}>
-                      <input className="border-2 text-black rounded-md  bg-white h-10 m-6 flex-grow" type="text" name="searchbar" placeholder="Enter Movie Title to search...." value={searchbar} onChange={handleNameChange}/> 
+                      <input className="border-2 text-black rounded-md  bg-white h-10 m-6 flex-grow" type="text" name="searchbar"
+                       placeholder="Enter Movie Title to search...." value={searchbar} onChange={handleNameChange}/> 
                       <button className="mr-10"  type="submit"><SlMagnifier className="w-8 h-8 " /></button>
                     </form>        
               <div className="flex">
@@ -144,8 +145,17 @@ return (
             </div>
 
             {/* Comment text here */}
-            <div className="flex  justify-around bg-cover bg-center "> 
-                  <div className="flex flex-wrap border-white border-2 m-5 rounded-xl w-3/4 ">
+            <div className="flex justify-around"
+            style={{
+              backgroundImage: 'url("https://media.gettyimages.com/id/1366097039/video/ld-cinema-projector-displaying-a-movie-in-a-dark-room.jpg?s=640x640&k=20&c=CN5c6PaEIdh9QYSjQEVr7hplTLNVaJAou_J_a5i73hI=")',
+              backgroundSize: '100% auto',  
+              backgroundPosition: 'center',
+              backgroundAttachment: 'fixed',
+              backgroundRepeat: 'repeat-y' // Centers the image
+            }}> 
+                  <div className="flex flex-wrap m-5 rounded-xl w-3/4" 
+                  style={{ minHeight: '100vh' }}
+                  >
                   {ArrayOfMovies.length > 0  ? (
                     <>
                     <MovieList ArrayOfMovies={ArrayOfMovies} onAddItem={handleAddItem} />
@@ -161,9 +171,14 @@ return (
 
 
                   
-                  <div className="flex flex-col items-center border-white border-2  m-5 rounded-xl w-1/4 ">
-                  <p>Favourties</p>
-                  <MovieFavourtieList favouritesarray={favouritesarray} onDeleteItem={handleDeleteItem} setfavouritesarray={setfavouritesarray}/>
+                  <div className="flex flex-col items-center  m-5 rounded-xl w-1/4 ">
+
+                  {favouritesarray.length > 0 ? (
+                      <>
+                      <p>Favourties List</p>
+                      <MovieFavourtieList favouritesarray={favouritesarray} onDeleteItem={handleDeleteItem} setfavouritesarray={setfavouritesarray}/>
+                      </>) : (<></>)}
+                  
                   
                   </div>
                   

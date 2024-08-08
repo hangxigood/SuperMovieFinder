@@ -23,14 +23,14 @@ export default function Movie({ id, poster_path, title, release_date, vote_avera
 
 
     return(
-    <div className="border-white border-2 rounded-md m-2 w-80 h-96">
+    <div className=" rounded-md m-2 w-80 h-96">
         <div className="flex ">
-            <img className="" src={`https://image.tmdb.org/t/p/w185${poster_path}`}/>
+            <img className="rounded-xl mr-2" src={`https://image.tmdb.org/t/p/w185${poster_path}`}/>
             <div className="flex  justify-center flex-col">
                     <p className="font-bold">{title}</p>
                     <p className="mt-3 mb-3">{release_date}</p>
                     <p>Rating:{vote_average}</p>
-                   <button className="mt-1 ml-1 w-0" onClick={handleClick}><HeartIcon color={'white'}/></button>
+                   <button className="mt-1 ml-1 w-0" onClick={handleClick}><HeartIcon color={'red'}/></button>
             </div>
         </div>
         <p>{overview.substring(0, 150)}{overview.length > 100 ? '...' : ''}</p>

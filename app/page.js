@@ -25,7 +25,12 @@ export default function Page() {
   /*****************************************Firestore DB***********************************************************/
 //on press of like button add movie object to DB
 const handleAddItem = async (addedItem) => {
-  if(user){
+
+  if (!user) {
+    alert("Please log in to add items to your favourites list.");
+    return;
+  }
+  else {
   var docid = await addItem(user.uid,addedItem)
   console.log('the SUPERDUPER docref is:' + docid )
     addedItem.docid  = docid;

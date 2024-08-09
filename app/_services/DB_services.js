@@ -66,12 +66,12 @@ async function deleteItem (userId, itemId){
 
 
 // Function to create an item-- I dontunderstand the purpose of this method compared to add item???
-async function createItem(db, userId, itemData) {
-  const docRef = await addDoc(collection(db, "users", userId, "items"), itemData);
-  console.log("Item is created with ID: ", docRef.id);
-  return docRef.id;
-}
+// async function createItem(db, userId, itemData) {
+//   const docRef = await addDoc(collection(db, "users", userId, "items"), itemData);
+//   console.log("Item is created with ID: ", docRef.id);
+//   return docRef.id;
+// }
 
 
 
-export { getItems, addItem, createItem, deleteItem };
+export { getItems, addItem, deleteItem };

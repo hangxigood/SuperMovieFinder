@@ -21,7 +21,7 @@ export default function Page() {
   const [favouritesarray,setfavouritesarray] = useState([]);
 
 
-  const { user, gitHubSignIn, firebaseSignOut } = useUserAuth();
+  const { user, gitHubSignIn, googleSignIn, firebaseSignOut } = useUserAuth();
   /*****************************************Firestore DB***********************************************************/
 //on press of like button add movie object to DB
 const handleAddItem = async (addedItem) => {
@@ -67,9 +67,17 @@ useEffect(() => {
 
 
 
-  const handleLogin = async () => {
+  const handleLoginGithub = async () => {
     try {
       await gitHubSignIn();
+    } catch (error) {
+      console.error("Failed to sign in:", error);
+    }
+  };
+
+  const handleLoginGoogle = async () => {
+    try {
+      await googleSignIn();
     } catch (error) {
       console.error("Failed to sign in:", error);
     }
@@ -138,7 +146,8 @@ return (
                             <button className="mr-6" onClick={handleLogout}>Sign out</button>
                             </main>):(
                             <main className="">
-                                <button className="mr-14" onClick={handleLogin}>Sign in</button>
+                                <button className="mr-14" onClick={handleLoginGithub}>Sign in with Github</button>
+                                <button className="mr-14" onClick={handleLoginGoogle}>Sign in with Google</button>
                             </main>
                     )}
               </div>

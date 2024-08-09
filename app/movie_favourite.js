@@ -23,7 +23,7 @@ export default function MovieFavourite({poster_path, title, onDeleteItem, docid,
                     <div className=" flex flex-col items-center justify-center">
                     
                     <img className=" rounded-xl" src={`https://image.tmdb.org/t/p/w185${poster_path}`}/>
-                            <p className="font-bold">{title}</p>
+                            <p className=" text-white font-bold">{title}</p>
                             <button className="  " onClick={handleClick} > <XIcon color={'red'}/> </button>
                     </div>
             </div>

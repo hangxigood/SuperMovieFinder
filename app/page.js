@@ -142,12 +142,12 @@ return (
                     </form>        
               <div className="flex">
                     {user ? (<main className="flex">
-                            <p className="mr-10">{user.email}</p>
-                            <button className="mr-6" onClick={handleLogout}>Sign out</button>
+                            <p className="mr-10 text-white">{user.email}</p>
+                            <button className="mr-6 text-white" onClick={handleLogout}>Sign out</button>
                             </main>):(
                             <main className="">
-                                <button className="mr-14" onClick={handleLoginGithub}>Sign in with Github</button>
-                                <button className="mr-14" onClick={handleLoginGoogle}>Sign in with Google</button>
+                                <button className="mr-14 text-white" onClick={handleLoginGithub}>Sign in with Github</button>
+                                <button className="mr-14 text-white" onClick={handleLoginGoogle}>Sign in with Google</button>
                             </main>
                     )}
               </div>

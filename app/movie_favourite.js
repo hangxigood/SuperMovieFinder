@@ -10,7 +10,6 @@ export default function MovieFavourite({poster_path, title, onDeleteItem, docid,
     const handleClick  = async () => 
         {
            await onDeleteItem(docid);
-            setfavouritesarray([...favouritesarray.filter(m => m !== movie)])
             
         }
 

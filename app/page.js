@@ -39,12 +39,12 @@ const handleAddItem = async (addedItem) => {
 
 };
 
-
 const handleDeleteItem = async (docRef) => {
   await deleteItem(user.uid,docRef);
+  console.log(favouritesarray);
+  console.log(docRef);
+  setfavouritesarray([...favouritesarray.filter(m => m.docid !== docRef)])
 }
-
-
 
 //on page load get favourties from DB 
 useEffect(() => {
@@ -172,7 +172,7 @@ return (
                   >
                   {ArrayOfMovies.length > 0  ? (
                     <>
-                    <MovieList ArrayOfMovies={ArrayOfMovies} onAddItem={handleAddItem} />
+                    <MovieList ArrayOfMovies={ArrayOfMovies} Favouritesarray={favouritesarray} onAddItem={handleAddItem} onRemoveItem={handleDeleteItem} />
                     </>
                   ):(
                     <>

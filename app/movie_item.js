@@ -36,7 +36,7 @@ export default function Movie({ id, docid, poster_path, title, release_date, vot
                     <p className="mt-3 mb-3 text-white">{release_date}</p>
                     <p className="text-white">Rating:{vote_average}</p>
                    <button className="mt-1 ml-1 w-0" onClick={handleClick}>
-                    <HeartIcon color={isLiked ? "red" : "blue"}/>
+                    <HeartIcon color={isLiked ? "red" : "white"}/>
                     </button>
             </div>
         </div>

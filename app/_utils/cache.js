@@ -2,6 +2,10 @@ class SimpleCache {
     constructor() {
       this.cache = new Map();
     }
+
+    has(key) {
+        return this.cache.has(key);
+        }
   
     get(key) {
       const item = this.cache.get(key);

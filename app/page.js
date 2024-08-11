@@ -205,9 +205,9 @@ return (
 
 /***********************************************************API FETCH********************************************************************* */
 
-async function fetchMovieArray(moviename) {
+async function fetchMovieArray(movieName) {
   try {
-      const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${moviename}&api_key=de85768f0d74622c7361ecc14c017ec1`);
+      const response = await fetch(`api/movieSearch?movieName=${movieName}`);
       if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
       }

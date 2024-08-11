@@ -9,6 +9,8 @@ import MovieFavourtieList from "./movie_favourite_list";
 import { getItems } from "./_services/DB_services";
 import { db } from "./_utils/firebase";
 import { deleteItem } from "./_services/DB_services";
+import { CiShare1 } from "react-icons/ci";
+import ShareModal from "./ShareModal";
 
 
 export default function Page() {
@@ -19,6 +21,7 @@ export default function Page() {
   const [name, setName] = useState("");
   const [searchbar, setSearchBar] = useState("");
   const [favouritesarray,setfavouritesarray] = useState([]);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
 
   const { user, gitHubSignIn, googleSignIn, firebaseSignOut } = useUserAuth();
@@ -129,7 +132,13 @@ setMovieArray(NewMovieArray)
   const handleNameChange = (event) =>
     {setSearchBar(event.target.value);}
 
-/**************************************************************************************************************** */
+/******************************* Handle share *************************************************** */
+
+const handleShare = () => {
+  setIsShareModalOpen(true);
+};
+
+/********************************************************************************** */
 
 return (
   <main className="flex flex-col h-auto">
@@ -189,14 +198,26 @@ return (
 
                   {favouritesarray.length > 0 ? (
                       <>
-                      <p>Favourties List</p>
+                      <div className="flex items-center w-full mb-2">
+                        <p className="text-lg font-bold pr-2">Favourites List</p>
+                        <button 
+                          onClick={handleShare} 
+                          className="text-white hover:text-blue-700 transition-colors"
+                          aria-label="Share favorites"
+                        >
+                        <CiShare1 size={20} />
+                        </button>
+                      </div>
                       <MovieFavourtieList favouritesarray={favouritesarray} onDeleteItem={handleDeleteItem} setfavouritesarray={setfavouritesarray}/>
-                      </>) : (<></>)}
-                  
-                  
+                      </>) : (<p>No favorites added yet</p>)}
+                    </div>
+                    <ShareModal 
+                      isOpen={isShareModalOpen} 
+                      onClose={() => setIsShareModalOpen(false)} 
+                      favouritesarray={favouritesarray}
+                    />
                   </div>
                   
-            </div>
   </main>
   );
 }

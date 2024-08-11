@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import { cache } from '../../_utils/cache';
 
 const CACHE_TTL = 60 * 60 * 0.05; // 0.05 hours in seconds(3 mins)
+const MAX_CACHED_RESULTS = 100; // Limit the number of results to cache
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -25,8 +26,8 @@ export async function GET(request) {
   const fullData = await response.json();
   console.log('Serving from API');
 
-  // Extract and format only the data we want to cache
-  const formattedResults = fullData.results.map(movie => ({
+// Extract and format only the data we want to cache, limiting to MAX_CACHED_RESULTS
+  const formattedResults = fullData.results.slice(0, MAX_CACHED_RESULTS).map(movie => ({
     id: movie.id,
     poster_path: movie.poster_path,
     title: movie.title,

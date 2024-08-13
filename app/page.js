@@ -47,6 +47,9 @@ export default function Page() {
     if (user) {
       fetchLikedMovies();
     }
+    else {
+      setLikedMovies([]); // Clear LikedMovies when there's no user
+    }
   }, [user]);
 
   const fetchLikedMovies = async () => {

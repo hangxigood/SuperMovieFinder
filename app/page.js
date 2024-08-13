@@ -1,76 +1,21 @@
 "use client";
-import {useState} from "react";
+import { useState, useEffect } from "react";
 import { SlMagnifier } from "react-icons/sl";
-import MovieList from "./movie_list";
-import {useUserAuth} from "./_utils/auth-context.js";
-import { useEffect } from "react";
-import { addItem } from "./_services/DB_services";
-import MovieFavourtieList from "./movie_favourite_list";
-import { getItems } from "./_services/DB_services";
-import { db } from "./_utils/firebase";
-import { deleteItem } from "./_services/DB_services";
-
+import { useUserAuth } from "./_utils/auth-context.js";
+import { getLikedMoviesId, addLikedMovie, deleteLikedMovie } from "./_services/Database";
+import MovieList from "./_components/MovieList";
+import LikedMovieList from "./_components/LikedMovieList";
 
 export default function Page() {
 
   /****************************State Variables*********************************************/
 
-  const [ArrayOfMovies,setMovieArray] = useState([]);
-  const [name, setName] = useState("");
-  const [searchbar, setSearchBar] = useState("");
-  const [favouritesarray,setfavouritesarray] = useState([]);
-
-
+  const [LikedMovies,setLikedMovies] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const { user, gitHubSignIn, googleSignIn, firebaseSignOut } = useUserAuth();
-  /*****************************************Firestore DB***********************************************************/
-//on press of like button add movie object to DB
-const handleAddItem = async (addedItem) => {
 
-  if (!user) {
-    alert("Please log in to add items to your favourites list.");
-    return;
-  }
-  else {
-  var docid = await addItem(user.uid,addedItem)
-  console.log('the SUPERDUPER docref is:' + docid )
-    addedItem.docid  = docid;
-  setfavouritesarray(favouritesarray => {return[addedItem,...favouritesarray]})
-}
-
-};
-
-const handleDeleteItem = async (docRef) => {
-  await deleteItem(user.uid,docRef);
-  console.log(favouritesarray);
-  console.log(docRef);
-  setfavouritesarray([...favouritesarray.filter(m => m.docid !== docRef)])
-}
-
-//on page load get favourties from DB 
-useEffect(() => {
-  const loadItems = async () => {
-    if (user) {
-      console.log("User is defined:", user); // Log user object
-      console.log("User ID:", user.uid); // Debug log
-      try {
-        const itemsArray = await getItems(db, user.uid);
-        console.log("The items array is:", itemsArray); // Print the items to the console
-        setfavouritesarray(itemsArray);
-      } catch (error) {
-        console.error("Error fetching items:", error); // Log errors
-      }
-    } else {
-      console.log("User is not defined"); // Log when user is not defined
-    }
-  };
-  loadItems();
-}, [user]);
-
-
-
-//**************************************Firebase**************************************// 
-
-
+  //**************************************Firebase Auth**************************************// 
 
   const handleLoginGithub = async () => {
     try {
@@ -96,38 +41,62 @@ useEffect(() => {
     }
   };
 
+  /************************** update local liked movie list if user changed *********************************************************/
 
-/***********************************API Search************************************************/
-    
-useEffect(() => {
-  if (name) {
-      UpdateMovieArray();
-  }
-}, [name]);
-
-
-async function UpdateMovieArray() {
-const NewMovieArray = await fetchMovieArray(name);
-setMovieArray(NewMovieArray)
-}
-
-/******************************************FORM SUBMISSION********************************************** */
-  const handleSubmit = (event) => {
-    event.preventDefault();
-   // console.log('in page.js Name is:'+ name);
-    if (searchbar.trim() === '') {
-      setMovieArray([]);
-      setName("");
-    } else {
-      setName(searchbar);
-      //console.log('in page.js searchbar is:'+searchbar)
+  useEffect(() => {
+    if (user) {
+      fetchLikedMovies();
     }
+  }, [user]);
 
+  const fetchLikedMovies = async () => {
+    if (user) {
+      const likedMoviesIdArray = await getLikedMoviesId(user.uid); // get liked movies id from database  
+      const likedMovies = await Promise.all(likedMoviesIdArray.map(async (movie) => {
+        const response = await fetch(`api/MovieSearch?searchId=${movie.id}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        return { ...data, docid: movie.docid }; // add docid to the movie object
+      }));
+      setLikedMovies(likedMovies);
+    }
+  };
+
+  /********************************************* handle functions ******************************************************************/
+
+  const handleLikeMovie = async (MovieToBeLiked) => {
+    if (!user) {
+      alert("Please log in to add movies to your favourites list.");
+      return;
+    }
+    else {
+      var docid = await addLikedMovie(user.uid, { id: MovieToBeLiked.id});
+      MovieToBeLiked.docid = docid;
+      setLikedMovies([...LikedMovies, MovieToBeLiked]);
+    }
   }
 
-//this shows the text in the search bar
-  const handleNameChange = (event) =>
-    {setSearchBar(event.target.value);}
+  const handleDeleteMovie = async (MovieToBeDeleted) => {
+    console.log(MovieToBeDeleted.docid);
+    await deleteLikedMovie(user.uid, MovieToBeDeleted);
+    setLikedMovies([...LikedMovies.filter(m => m.docid !== MovieToBeDeleted.docid)]);
+  }
+
+  const handleSearch = async (event) => {
+    event.preventDefault();
+    if (searchQuery.trim() === '') {
+      setSearchResults([]);
+    } else {
+      const response = await fetch(`api/MovieSearch?searchKeyWord=${searchQuery}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setSearchResults(data.results);
+    }
+  }
 
 /**************************************************************************************************************** */
 
@@ -140,9 +109,14 @@ return (
               </div>
                     {/* our form for the search */}
                     {/*The Value of the input field must be tied to the state variable Name, in order for the test to be seen typing in, and for the the name variable to be used.*/}
-                    <form className="flex flex-grow" onSubmit={handleSubmit}>
-                      <input className="border-2 text-black rounded-md  bg-white h-10 m-6 flex-grow" type="text" name="searchbar"
-                       placeholder="Enter Movie Title to search...." value={searchbar} onChange={handleNameChange}/> 
+                    <form className="flex flex-grow" onSubmit={handleSearch}>
+                      <input 
+                      className="border-2 text-black rounded-md  bg-white h-10 m-6 flex-grow" 
+                      type="text" 
+                      placeholder="Search for movies..."
+                      value={searchQuery} 
+                      onChange={ (e) => setSearchQuery(e.target.value) }
+                      /> 
                       <button className="mr-10"  type="submit"><SlMagnifier className="w-8 h-8 " /></button>
                     </form>        
               <div className="flex">
@@ -158,7 +132,7 @@ return (
               </div>
             </div>
 
-            {/* Comment text here */}
+            {/* below the header */}
             <div className="flex justify-around"
             style={{
               backgroundImage: 'url("https://media.gettyimages.com/id/1366097039/video/ld-cinema-projector-displaying-a-movie-in-a-dark-room.jpg?s=640x640&k=20&c=CN5c6PaEIdh9QYSjQEVr7hplTLNVaJAou_J_a5i73hI=")',
@@ -167,12 +141,13 @@ return (
               backgroundAttachment: 'fixed',
               backgroundRepeat: 'repeat-y' // Centers the image
             }}> 
+                  {/* the search results */}
                   <div className="flex flex-wrap m-5 rounded-xl w-3/4" 
                   style={{ minHeight: '100vh' }}
                   >
-                  {ArrayOfMovies.length > 0  ? (
+                  {searchResults.length > 0  ? (
                     <>
-                    <MovieList ArrayOfMovies={ArrayOfMovies} Favouritesarray={favouritesarray} onAddItem={handleAddItem} onRemoveItem={handleDeleteItem} />
+                    <MovieList searchResults={searchResults} LikedMovies={LikedMovies} onAddItem={handleLikeMovie} onRemoveItem={handleDeleteMovie} />
                     </>
                   ):(
                     <>
@@ -183,45 +158,16 @@ return (
                 }
                   </div>
 
-
-                  
+                  {/* Liked movies list */}
                   <div className="flex flex-col items-center  m-5 rounded-xl w-1/4 ">
 
-                  {favouritesarray.length > 0 ? (
+                  {LikedMovies.length > 0 ? (
                       <>
                       <p>Favourties List</p>
-                      <MovieFavourtieList favouritesarray={favouritesarray} onDeleteItem={handleDeleteItem} setfavouritesarray={setfavouritesarray}/>
+                      <LikedMovieList LikedMovies={LikedMovies} onDeleteItem={handleDeleteMovie}/>
                       </>) : (<></>)}
-                  
-                  
                   </div>
-                  
             </div>
   </main>
   );
 }
-
-
-
-/***********************************************************API FETCH********************************************************************* */
-
-async function fetchMovieArray(moviename) {
-  try {
-      const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${moviename}&api_key=de85768f0d74622c7361ecc14c017ec1`);
-      if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      if (data.results) {
-          return data.results;
-      } else {
-          return;
-      }
-  } catch (error) {
-      console.log(error.message);
-      return [];
-
-  }
-}
-    
-
